@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" >
+    <!--  ros2_control pluging is better than this one but for now we will include this it is only used for gazabo -->
+    <gazebo>
+        <!--  filename is the lib file name
+          name is the name of plugin-->
+        <plugin
+        filename="libignition-gazebo-diff-drive-system.so" 
+        name="ignition::gazebo::systems::DiffDrive"> 
+
+        <!--  left and right joints define the left and right wheel-->
+        <left_joint>left_wheel_joint</left_joint>
+        <right_joint>right_wheel_joint</right_joint>
+        <wheel_separation>0.35</wheel_separation>
+        <wheel_radius>0.05</wheel_radius>
+        <odom_publish_frequency>1</odom_publish_frequency>
+
+        <!--  is the input topic to this plugin-->
+        <topic>cmd_vel</topic>
+    </plugin>
+    
+
+    </gazebo>
+
+</robot>
