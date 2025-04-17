@@ -1,15 +1,27 @@
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, SetEnvironmentVariable
+from launch.actions import IncludeLaunchDescription, SetEnvironmentVariable, DeclareLaunchArgument
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.substitutions import FindPackageShare
 from launch_ros.actions import Node
 import os
 from pathlib import Path
 from ament_index_python.packages import get_package_share_directory
+from launch.substitutions import LaunchConfiguration
+from launch.conditions import IfCondition
 
 def generate_launch_description():
 
     package_name = 'autunomous_proto'
+    # arugment for the launch file to turn the image viwer on or not
+    image_viewer_arg = DeclareLaunchArgument(
+        'image_viewer',
+        default_value='false',
+        description='Turn on the image viewer'
+    )
+    
+    # Retrieve the value of the image_viewer argument
+    image_viewer = LaunchConfiguration('image_viewer')
+
     # Launch the robot_state_publisher node
     rsp_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
@@ -17,6 +29,8 @@ def generate_launch_description():
         ]), launch_arguments= {'use_sim_time': 'true'}.items()
 
     )
+
+
 
     gazebo_resource_path = SetEnvironmentVariable(
         "IGN_SIM_RESOURCE_PATH",
@@ -26,7 +40,7 @@ def generate_launch_description():
         )
     # load the my_world.sdf world file
     world_path = os.path.join(
-        get_package_share_directory(package_name), 'worlds', 'my_world.world'
+        get_package_share_directory(package_name), 'worlds', 'world.sdf'
     )
 
     # Launch the Gazebo simulation
@@ -61,16 +75,32 @@ def generate_launch_description():
         ]
     )
 
-    # # for image data run the following command
-    # ros_gz_image_bridge_node = Node(
-    #     package='ros_gz_bridge',
-    #     executable='image_bridge',
-    #     arguments=["/camera/image_raw"],
-    # )
+    compressed_image_node = Node(
+        package='image_transport',
+        executable='republish',
+        arguments=['raw', 'compressed'],
+        remappings=[
+            ("in", "/camera/image_raw"),
+            ("out/compressed", "/camera/image_raw/compressed")
+        ],
+        output='screen'
+    )
+
+    
+    image_viewer_node = Node(
+        package="rqt_image_view",
+        executable="rqt_image_view",
+        condition=IfCondition(image_viewer)
+    )
+  
+
 
     return LaunchDescription([
+        image_viewer_arg,
         rsp_launch,
         gazebo_launch,
         spawn_node,
-        ros_gz_bridge_node
+        ros_gz_bridge_node,
+        compressed_image_node,
+        image_viewer_node
     ])
