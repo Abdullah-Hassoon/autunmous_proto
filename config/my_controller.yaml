@@ -1,0 +1,63 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 30
+    use_sim_time: true
+
+    # set the controller that we will use
+    diff_drive_controller:   # name of the controller
+      type: diff_drive_controller/DiffDriveController  # type of the controller
+
+    joint_state_broadcaster:  # name of the joint state broadcaster
+      type: joint_state_broadcaster/JointStateBroadcaster  # type of the joint state broadcaster
+
+# set the parameters for the diff drive controller
+diff_drive_controller:
+  ros__parameters:
+
+    left_wheel_names: ['left_wheel_joint']
+    right_wheel_names: ['right_wheel_joint']
+    
+    
+    wheel_separation : 0.17
+    wheels_per_side : 1
+
+    wheel_radius : 0.033
+
+    base_frame_id: base_link
+
+    pose_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.01]
+    twist_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.01]
+
+    # stop the robot if we do not receive a msg with 0.25 seconds
+    cmd_vel_timeout: 10.0
+
+
+    publish_limited_velocity: true
+
+    publish_rate: 50.0
+    use_stamped_vel: true
+    # publish_wheel_data: true
+    # enable_odom_tf: true
+
+    # set velocity limits
+    linear:
+      x:
+        has_velocity_limits : true
+        max_velocity: 1.0           # [m/s]
+        min_velocity: -0.5
+        
+        has_acceleration_limits : true
+        max_acceleration: 0.8
+        min_acceleration: -0.4
+
+
+
+    angular:
+      z:
+        has_velocity_limits: true
+        max_velocity: 1.7           # [rad/s]
+        min_velocity: -1.7
+
+        has_acceleration_limits: true
+        max_acceleration: 1.5
+        min_acceleration: -1.5

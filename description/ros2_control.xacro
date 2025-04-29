@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" >
+    
+  <ros2_control name="diff_robot" type="system">
+    <hardware>
+      <!--  The plugin is the hardware interface -->
+      <plugin>ign_ros2_control/IgnitionSystem</plugin>
+    </hardware>
+    <!--  Controlled joints -->
+    <joint name="left_wheel_joint" >
+      <command_interface name="velocity">
+        <!--  Limits -->
+        <param name="min">-10</param>
+        <param name="max">10</param>
+      </command_interface>
+      <state_interface name="velocity"></state_interface>
+      <state_interface name="position"></state_interface>
+    </joint>
+
+    <joint name="right_wheel_joint" >
+      <command_interface name="velocity">
+        <!--  Limits -->
+        <param name="min">-10</param>
+        <param name="max">10</param>
+      </command_interface>
+      <state_interface name="velocity"></state_interface>
+      <state_interface name="position"></state_interface>
+    </joint>
+  </ros2_control>
+
+  <!-- Load the ros2 control plugin-->
+  <gazebo>
+    <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">     
+      <parameters>$(find autunomous_proto)/config/my_controller.yaml</parameters>
+    </plugin>
+  </gazebo>
+</robot>
